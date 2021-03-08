@@ -57,7 +57,7 @@ jobs:
           --application-name ${{ matrix.app-name }} \
           --description "Revision of the ${{ matrix.appname }}-${{ github.sha }}" \
           --ignore-hidden-files \
-          --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.tar.gz \
+          --s3-location s3://${{ matrix.s3-bucket }}/${{ matrix.s3-filename }}.zip \
           --source ./
       # Creating deployment via CodeDeploy
       - name: Creating AWS Deployment
