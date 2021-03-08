@@ -13,10 +13,8 @@ jobs:
 #         uses: actions/setup-dotnet@v1
 #         with:
 #           dotnet-version: 5.0.101
-      - name: Write telegram token
-        run: 'echo "$TELEGRAM_TOKEN" > token'
-        env:
-          TELEGRAM_TOKEN: ${{secrets.TELEGRAM_TOKEN}}
+      - name: Echo 100
+        run: 'echo 100'
 #       - name: Build
 #         run: dotnet build --configuration Release --no-restore
   
@@ -55,6 +53,10 @@ jobs:
 #        run: cp -R ./*.sh ./bin/app/
 #      - name: Copying req
 #        run: cp -R ./*.sh ./bin/app/
+      - name: Write telegram token
+        run: 'echo "$TELEGRAM_TOKEN" > token'
+        env:
+          TELEGRAM_TOKEN: ${{secrets.TELEGRAM_TOKEN}}
       
       # Install AWS CLI 2
       - name: Install AWS CLI 2
