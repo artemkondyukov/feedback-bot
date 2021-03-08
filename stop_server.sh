@@ -1,1 +1,1 @@
-docker stop feedback-bot-image
+docker stop feedback-bot
