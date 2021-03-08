@@ -4,10 +4,10 @@ on:
     branches:
       - develop
 jobs:
-  build:
-    name: CI part
-    runs-on: ubuntu-latest
-    steps:
+#   build:
+#     name: CI part
+#     runs-on: ubuntu-latest
+#     steps:
 #       - uses: actions/checkout@v2
 #       - name: Setup .NET Core
 #         uses: actions/setup-dotnet@v1
