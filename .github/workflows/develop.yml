@@ -13,8 +13,10 @@ jobs:
 #         uses: actions/setup-dotnet@v1
 #         with:
 #           dotnet-version: 5.0.101
-      - name: Install dependencies
-        run: cat ${{ secrets.AWS_ACCESS_KEY_ID }} > .token
+      - name: Write telegram token
+        run: 'echo "$TELEGRAM_TOKEN" > .token'
+        env:
+          TELEGRAM_TOKEN: ${{secrets.TELEGRAM_TOKEN}}
 #       - name: Build
 #         run: dotnet build --configuration Release --no-restore
   
