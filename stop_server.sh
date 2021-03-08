@@ -1,1 +1,1 @@
-kill -9 $(cat pid)
+kill -9 $(cat /opt/feedback-bot/pid)
