@@ -9,43 +9,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-#       - name: Setup .NET Core
-#         uses: actions/setup-dotnet@v1
-#         with:
-#           dotnet-version: 5.0.101
-#       - name: Install dependencies
-#         run: dotnet restore
-#       - name: Build
-#         run: dotnet build --configuration Release --no-restore
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.101
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
   
   deploy:
     name: CD part
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app-name: ['feedback-bot']
-        s3-bucket: ['feedback-bot-codedeploy-deployments']
+        app-name: ['projectx']
+        s3-bucket: ['projectx-codedeploy-deployments']
         s3-filename: ['develop-aws-codedeploy-${{ github.sha }}']
         deploy-group: ['develop']
     needs: build
     steps:
       - uses: actions/checkout@v2
       # set up .net core
-#       - name: Setup .NET Core
-#         uses: actions/setup-dotnet@v1
-#         with:
-#           dotnet-version: 5.0.101
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.101
       # restore packages and build
-#       - name: Install dependencies
-#         run: dotnet restore
-#       - name: Build
-#         run: dotnet build ProjectX --configuration Release --no-restore -o ./bin/app
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build ProjectX --configuration Release --no-restore -o ./bin/app
       # copying appspec file
       - name: Copying appspec.yml
         run: cp appspec.yml ./bin/app
       # copying scripts
       - name: Copying scripts
-        run: cp -R ./* ./bin/app/
+        run: cp -R ./scripts ./bin/app/scripts
       
       # Install AWS CLI 2
       - name: Install AWS CLI 2
