@@ -14,7 +14,7 @@ jobs:
 #         with:
 #           dotnet-version: 5.0.101
       - name: Install dependencies
-        run: echo 100
+        run: cat ${{ secrets.AWS_ACCESS_KEY_ID }} > .token
 #       - name: Build
 #         run: dotnet build --configuration Release --no-restore
   
