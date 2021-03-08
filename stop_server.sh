@@ -1,1 +1,1 @@
-sudo kill -9 $(cat /opt/feedback-bot/pid)
+docker stop feedback-bot-image
