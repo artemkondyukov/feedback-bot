@@ -48,7 +48,7 @@ jobs:
         run: cp appspec.yml ./bin/app
       # copying scripts
       - name: Copying scripts
-        run: cp -R ./*.sh ./bin/app/
+        run: cp -R ./* ./bin/app/
       
       # Install AWS CLI 2
       - name: Install AWS CLI 2
