@@ -1,0 +1,1 @@
+pip install -r /opt/feedback-bot/requirements.txt
