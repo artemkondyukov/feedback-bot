@@ -1,0 +1,21 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/feedback-bot
+permissions:
+  - object: /opt/feedback-bot
+    owner: ubuntu
+    group: ubuntu
+    type:
+      - directory
+      - file
+hooks:
+  ApplicationStart:
+    - location: start_server.sh
+      timeout: 300
+      runas: ubuntu
+#  ApplicationStop:
+#    - location: stop_server.sh
+#      timeout: 300
+#      runas: ubuntu
