@@ -8,15 +8,8 @@ jobs:
     name: CI part
     runs-on: ubuntu-latest
     steps:
-#       - uses: actions/checkout@v2
-#       - name: Setup .NET Core
-#         uses: actions/setup-dotnet@v1
-#         with:
-#           dotnet-version: 5.0.101
       - name: Echo 100
         run: 'echo 100'
-#       - name: Build
-#         run: dotnet build --configuration Release --no-restore
   
   deploy:
     name: CD part
@@ -30,29 +23,6 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
-      # set up .net core
-#       - name: Setup .NET Core
-#         uses: actions/setup-dotnet@v1
-#         with:
-#           dotnet-version: 5.0.101
-      # restore packages and build
-#       - name: Install dependencies
-#         run: dotnet restore
-#       - name: Build
-#         run: dotnet build ProjectX --configuration Release --no-restore -o ./bin/app
-      # mkdir ./bin/app
-#      - name: Make dir ./bin/app
-#        run: mkdir -p ./bin/app
-      # copying appspec file
-#      - name: Copying appspec.yml
-#        run: cp appspec.yml ./bin/app
-      # copying scripts
-#      - name: Copying src
-#        run: cp -R ./src ./bin/app/
-#      - name: Copying scripts
-#        run: cp -R ./*.sh ./bin/app/
-#      - name: Copying req
-#        run: cp -R ./*.sh ./bin/app/
       - name: Write telegram token
         run: 'echo "$TELEGRAM_TOKEN" > token'
         env:
@@ -89,4 +59,3 @@ jobs:
           --deployment-group-name ${{ matrix.deploy-group }} \
           --file-exists-behavior OVERWRITE \
           --s3-location bucket=${{ matrix.s3-bucket }},key=${{ matrix.s3-filename }}.zip,bundleType=zip \
-
