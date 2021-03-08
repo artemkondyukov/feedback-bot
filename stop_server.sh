@@ -1,1 +1,1 @@
-echo 200
+kill -9 $(cat pid)

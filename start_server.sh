@@ -1,1 +1,1 @@
-echo 100
+python src/main.py & echo $! > pid
