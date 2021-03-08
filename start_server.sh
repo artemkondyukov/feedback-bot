@@ -1,1 +1,1 @@
-python src/main.py & echo $! > pid
+python src/main.py

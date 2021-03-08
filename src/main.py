@@ -8,7 +8,7 @@ def start(update, context):
 
 token = open(".token", "r").read()
 print(token)
-print(os.getpid())
+open("pid", "w").write(str(os.getpid()))
 updater = Updater(token=token, use_context=True)
 dispatcher = updater.dispatcher
 start_handler = CommandHandler('start', start)
