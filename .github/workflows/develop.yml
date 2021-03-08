@@ -8,6 +8,7 @@ jobs:
     name: CI part
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Write telegram token
         run: 'echo "$TELEGRAM_TOKEN" > token'
         env:
