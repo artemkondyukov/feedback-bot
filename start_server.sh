@@ -1,2 +1,2 @@
-pwd > curdir
-python3 /opt/feedback-bot/src/main.py
+cd /opt/feedback-bot
+python3 src/main.py
