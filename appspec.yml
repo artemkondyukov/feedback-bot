@@ -5,8 +5,6 @@ files:
     destination: /opt/feedback-bot
 permissions:
   - object: /opt/feedback-bot
-    owner: ubuntu
-    group: ubuntu
     type:
       - directory
       - file
