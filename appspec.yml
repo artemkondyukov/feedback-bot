@@ -3,11 +3,11 @@ os: linux
 files:
   - source: /
     destination: /opt/feedback-bot
-permissions:
-  - object: /opt/feedback-bot
-    type:
-      - directory
-      - file
+#permissions:
+#  - object: /opt/feedback-bot
+#    type:
+#      - directory
+#      - file
 hooks:
   ApplicationStart:
     - location: start_server.sh
