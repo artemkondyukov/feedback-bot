@@ -16,4 +16,3 @@ sudo usermod -a -G docker ec2-user
 
 cd /opt/feedback-bot
 docker image build . -t feedback-bot-image
-docker run feedback-bot-image
