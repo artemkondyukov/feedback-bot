@@ -1,1 +1,1 @@
-kill -9 $(cat /opt/feedback-bot/pid)
+sudo kill -9 $(cat /opt/feedback-bot/pid)
