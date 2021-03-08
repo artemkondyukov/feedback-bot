@@ -1,1 +1,2 @@
-docker stop feedback-bot
+docker stop feedback-bot || true
+docker rm feedback-bot || true
