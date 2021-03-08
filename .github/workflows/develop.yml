@@ -42,7 +42,7 @@ jobs:
 #         run: dotnet build ProjectX --configuration Release --no-restore -o ./bin/app
       # mkdir ./bin/app
       - name: Make dir ./bin/app
-        run: mkdir ./bin/app
+        run: mkdir -p ./bin/app
       # copying appspec file
       - name: Copying appspec.yml
         run: cp appspec.yml ./bin/app
