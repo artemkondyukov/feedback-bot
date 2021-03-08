@@ -3,11 +3,6 @@ os: linux
 files:
   - source: /
     destination: /opt/feedback-bot
-#permissions:
-#  - object: /opt/feedback-bot
-#    type:
-#      - directory
-#      - file
 hooks:
   AfterInstall:
     - location: install_requirements.sh
