@@ -14,12 +14,6 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{secrets.TELEGRAM_TOKEN}}
 
-#      - name: Docker image build
-#        run: 'docker image build . -t feedback-bot-image'
-#
-#      - name: Docker image save
-#        run: 'docker image save feedback-bot-image -o feedback-bot-image.tar.gz'
-  
   deploy:
     name: CD part
     runs-on: ubuntu-latest
