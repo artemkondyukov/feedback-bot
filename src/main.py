@@ -19,11 +19,13 @@ class User:
 def start(update, context):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=User(
-            update.message.chat.username,
-            update.message.chat.first_name,
-            update.message.chat.last_name,
-            update.message.chat_id
+        text=repr(
+            User(
+                update.message.chat.username,
+                update.message.chat.first_name,
+                update.message.chat.last_name,
+                update.message.chat_id
+            )
         )
     )
 
