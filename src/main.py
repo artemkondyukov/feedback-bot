@@ -1,7 +1,8 @@
 from contextlib import contextmanager
+import datetime
 import os
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -11,18 +12,18 @@ from typing import Callable
 
 
 questions = [
-    "wtf1?",
-    "wtf2?",
-    "wtf3?",
-    "wtf4?",
-    "wtf5?",
-    "wtf6?",
-    "wtf7?",
+    "Как дела в целом?",
+    "Как дела в индивидуальной работе?",
+    "Как дела в команде?",
+    "Как оцениваешь движение к своим рабочим целям?",
+    "Как оцениваешь нагрузку на работе?",
+    "Как ты относишься к нашей компании?",
+    "Твои комментарии:",
 ]
 
 reply_markup = ReplyKeyboardMarkup([
     ["Хорошо", "Плохо"]
-])
+], one_time_keyboard=True)
 
 DB_FILE = "smdd_feedback.db"
 
@@ -75,13 +76,15 @@ class Response(Base):
     question = Column(Integer)
     user = Column(Integer, ForeignKey("users.id"))
     answer = Column(String)
+    datetime = Column(DateTime)
 
     __tablename__ = "responses"
 
-    def __init__(self, question, user, answer):
+    def __init__(self, question, user, answer, datetime):
         self.question = question
         self.user = user
         self.answer = answer
+        self.datetime = datetime
 
     def __repr__(self):
         return f"Question: {self.id}\n" \
@@ -99,7 +102,7 @@ def get_response(question: int) -> Callable:
             if user.count() == 0:
                 context.bot.send_message(
                     chat_id=chat_id,
-                    text="You are not registered"
+                    text="Вы не зарегистрированы :("
                 )
             else:
                 assert user.count() == 1
@@ -107,7 +110,8 @@ def get_response(question: int) -> Callable:
                 current_response = Response(
                     question=question,
                     user=user.id,
-                    answer=update.message.text
+                    answer=update.message.text,
+                    datetime=datetime.datetime.now()
                 )
                 db.add(current_response)
 
@@ -118,10 +122,17 @@ def get_response(question: int) -> Callable:
             )
 
             return ConversationHandler.END
-        else:
+        elif question == len(questions) - 1:
             context.bot.send_message(
                 chat_id=chat_id,
                 text=questions[question]
+            )
+            return question + 1
+        else:
+            context.bot.send_message(
+                chat_id=chat_id,
+                text=questions[question],
+                reply_markup=reply_markup
             )
             return question + 1
     return response
@@ -172,7 +183,12 @@ if __name__ == "__main__":
     conversation_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            i: [MessageHandler(Filters.text, get_response(i))] for i in range(1, 8)
+            **{
+                i: [MessageHandler(Filters.regex("Хорошо|Плохо"), get_response(i))] for i in range(1, 7)
+            },
+            **{
+                7: [MessageHandler(Filters.text, get_response(7))]
+            }
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
