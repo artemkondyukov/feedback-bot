@@ -1,11 +1,11 @@
 from contextlib import contextmanager
-from functools import partial
 import os
 from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
+from telegram import ReplyKeyboardMarkup
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters, Updater
 from typing import Callable
 
@@ -20,6 +20,9 @@ questions = [
     "wtf7?",
 ]
 
+reply_markup = ReplyKeyboardMarkup([
+    ["Хорошо", "Плохо"]
+])
 
 DB_FILE = "smdd_feedback.db"
 
@@ -71,16 +74,19 @@ class Response(Base):
     id = Column(Integer, primary_key=True)
     question = Column(Integer)
     user = Column(Integer, ForeignKey("users.id"))
+    answer = Column(String)
 
     __tablename__ = "responses"
 
-    def __init__(self, question, user):
+    def __init__(self, question, user, answer):
         self.question = question
         self.user = user
+        self.answer = answer
 
     def __repr__(self):
         return f"Question: {self.id}\n" \
-               f"User: {self.user}"
+               f"User: {self.user}\n" \
+               f"Answer: {self.answer}"
 
 
 def get_response(question: int) -> Callable:
@@ -100,7 +106,8 @@ def get_response(question: int) -> Callable:
                 user = user.first()
                 current_response = Response(
                     question=question,
-                    user=user.id
+                    user=user.id,
+                    answer=update.message.text
                 )
                 db.add(current_response)
 
@@ -142,7 +149,8 @@ def start(update, context):
 
         context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=questions[0]
+            text=questions[0],
+            reply_markup=reply_markup
         )
 
     return 1
@@ -151,7 +159,7 @@ def start(update, context):
 def cancel(update, context):
     context.bot.send_message(
         chat_id=update.effective_chat.chat_id,
-        text="AAAA"
+        text="Что-то пошло не так"
     )
 
 
