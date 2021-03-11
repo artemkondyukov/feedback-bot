@@ -26,14 +26,18 @@ reply_markup = ReplyKeyboardMarkup([
 ], one_time_keyboard=True)
 
 DB_FILE = "smdd_feedback.db"
+DB_ADDRESS = "database-1.cxlsnzawijm7.eu-central-1.rds.amazonaws.com"
+DB_PORT = 3306
+PASSWORD = open("db_password", "r").read().strip()
 
 
 Base = declarative_base()
 
 
 @contextmanager
-def db_session(db_file):
-    engine = create_engine(f"sqlite:///{db_file}", echo=True, convert_unicode=True)
+def db_session():
+    engine = create_engine(
+        f"mysql://admin:{PASSWORD}@{DB_ADDRESS}:{DB_PORT}/feedback_bot", echo=True, convert_unicode=True)
     Base.metadata.create_all(engine)
     connection = engine.connect()
     session = scoped_session(
@@ -51,9 +55,9 @@ def db_session(db_file):
 
 class User(Base):
     id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True)
-    first_name = Column(String)
-    last_name = Column(String)
+    username = Column(String(127), unique=True)
+    first_name = Column(String(127))
+    last_name = Column(String(127))
     chat_id = Column(Integer, unique=True)
 
     __tablename__ = 'users'
@@ -75,7 +79,7 @@ class Response(Base):
     id = Column(Integer, primary_key=True)
     question = Column(Integer)
     user = Column(Integer, ForeignKey("users.id"))
-    answer = Column(String)
+    answer = Column(String(127))
     datetime = Column(DateTime)
 
     __tablename__ = "responses"
@@ -96,7 +100,7 @@ def get_response(question: int) -> Callable:
     def response(update, context) -> int:
         chat_id = update.effective_chat.id
 
-        with db_session(DB_FILE) as db:
+        with db_session() as db:
             user = db.query(User).filter_by(chat_id=chat_id)
 
             if user.count() == 0:
@@ -150,7 +154,7 @@ def start(update, context):
         text=repr(user)
     )
 
-    with db_session(DB_FILE) as db:
+    with db_session() as db:
         try:
             db.add(user)
             db.commit()

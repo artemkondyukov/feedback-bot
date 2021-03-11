@@ -7,6 +7,7 @@ WORKDIR /code
 # copy the dependencies file to the working directory
 COPY requirements.txt .
 COPY token .
+COPY db_password .
 
 # install dependencies
 RUN pip install -r requirements.txt
