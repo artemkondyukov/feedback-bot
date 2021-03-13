@@ -6,4 +6,7 @@ sudo service docker start
 sudo usermod -a -G docker ec2-user
 
 cd /opt/feedback-bot
+
+sudo mkdir -p /data
+
 docker image build . -t feedback-bot-image

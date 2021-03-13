@@ -2,7 +2,7 @@ from contextlib import contextmanager
 import datetime
 import os
 from sqlalchemy import create_engine
-from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -25,9 +25,7 @@ reply_markup = ReplyKeyboardMarkup([
     ["Хорошо", "Плохо"]
 ], one_time_keyboard=True)
 
-DB_FILE = "smdd_feedback.db"
-DB_ADDRESS = "database-1.cxlsnzawijm7.eu-central-1.rds.amazonaws.com"
-DB_PORT = 3306
+DB_FILE = "/data/smdd_feedback.db"
 PASSWORD = open("db_password", "r").read().strip()
 
 
@@ -37,7 +35,10 @@ Base = declarative_base()
 @contextmanager
 def db_session():
     engine = create_engine(
-        f"mysql://admin:{PASSWORD}@{DB_ADDRESS}:{DB_PORT}/feedback_bot", echo=True, convert_unicode=True)
+        f"sqlite:///{DB_FILE}",
+        echo=True,
+        convert_unicode=True
+    )
     Base.metadata.create_all(engine)
     connection = engine.connect()
     session = scoped_session(
