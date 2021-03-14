@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import csv
 import datetime
 import os
 from sqlalchemy import create_engine
@@ -97,6 +98,45 @@ class Response(Base):
                f"Answer: {self.answer}"
 
 
+def get_data(update, context) -> None:
+    chat_id = update.effective_chat.id
+
+    def make_row(pair):
+        response: Response
+        user: User
+        response, user = pair
+        return (
+            user.first_name,
+            user.last_name,
+            questions[response.question - 1],
+            response.answer,
+            str(response.datetime),
+            str(user.chat_id),
+            user.username
+        )
+
+    with db_session() as db:
+        answers = db.query(Response, User).filter(User.id == Response.user).all()
+        processed_answers = [
+            make_row(p) for p in answers
+        ]
+
+    timestamp = str(int(datetime.datetime.now().timestamp()))
+    filename = f"/tmp/{timestamp}.csv"
+
+    with open(filename, "w", newline='') as csv_file:
+        csv_writer = csv.writer(
+            csv_file,
+            delimiter=',',
+            quotechar='|',
+            quoting=csv.QUOTE_MINIMAL
+        )
+        for answer in processed_answers:
+            csv_writer.writerow(answer)
+
+    context.bot.send_document(chat_id, open(filename, "rb"))
+
+
 def get_response(question: int) -> Callable:
     def response(update, context) -> int:
         chat_id = update.effective_chat.id
@@ -186,7 +226,7 @@ if __name__ == "__main__":
     dispatcher = updater.dispatcher
 
     conversation_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler("start", start)],
         states={
             **{
                 i: [MessageHandler(Filters.regex("Хорошо|Плохо"), get_response(i))] for i in range(1, 7)
@@ -197,6 +237,8 @@ if __name__ == "__main__":
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
+    get_data_handler = CommandHandler("get_data", get_data)
 
     dispatcher.add_handler(conversation_handler)
+    dispatcher.add_handler(get_data_handler)
     updater.start_polling()
