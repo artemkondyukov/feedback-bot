@@ -7,7 +7,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
-from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, Chat, Message, constants
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters, Updater
 from typing import Callable
 
@@ -24,7 +24,7 @@ questions = [
 
 reply_markup = ReplyKeyboardMarkup([
     ["Хорошо", "Плохо"]
-], one_time_keyboard=True)
+], one_time_keyboard=False, resize_keyboard=True)
 
 DB_FILE = "/data/smdd_feedback.db"
 PASSWORD = open("db_password", "r").read().strip()
@@ -170,7 +170,8 @@ def get_response(question: int) -> Callable:
         elif question == len(questions) - 1:
             context.bot.send_message(
                 chat_id=chat_id,
-                text=questions[question]
+                text=questions[question],
+                reply_markup=ReplyKeyboardRemove()
             )
             return question + 1
         else:
@@ -212,6 +213,18 @@ def start(update, context):
     return 1
 
 
+def schedule(update, context):
+    with db_session() as db:
+        users = db.query(User).all()
+        chat_ids = [user.chat_id for user in users]
+
+    for chat_id in chat_ids:
+        context.bot.send_message(
+            chat_id,
+            "Отправьте боту /start"
+        )
+
+
 def cancel(update, context):
     context.bot.send_message(
         chat_id=update.effective_chat.chat_id,
@@ -238,7 +251,9 @@ if __name__ == "__main__":
         fallbacks=[CommandHandler('cancel', cancel)],
     )
     get_data_handler = CommandHandler("get_data", get_data)
+    schedule_handler = CommandHandler("schedule", schedule)
 
     dispatcher.add_handler(conversation_handler)
     dispatcher.add_handler(get_data_handler)
+    dispatcher.add_handler(schedule_handler)
     updater.start_polling()
