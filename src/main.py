@@ -37,7 +37,6 @@ Base = declarative_base()
 def db_session():
     engine = create_engine(
         f"sqlite:///{DB_FILE}",
-        echo=True,
         convert_unicode=True
     )
     Base.metadata.create_all(engine)
