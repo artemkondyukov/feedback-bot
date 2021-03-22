@@ -1,7 +1,7 @@
+import configparser
 from contextlib import contextmanager
 import csv
 import datetime
-import os
 from sqlalchemy import create_engine
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.exc import IntegrityError
@@ -11,32 +11,22 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters, Updater
 from typing import Callable
 
-
-questions = [
-    "Как дела в целом?",
-    "Как дела в индивидуальной работе?",
-    "Как дела в команде?",
-    "Как оцениваешь движение к своим рабочим целям?",
-    "Как оцениваешь нагрузку на работе?",
-    "Как ты относишься к нашей компании?",
-    "Твои комментарии:",
-]
+config = configparser.ConfigParser()
+config.read("data/config")
+questions = open(config["DEFAULT"]["QuestionsFile"]).readlines()
 
 reply_markup = ReplyKeyboardMarkup([
     ["Хорошо", "Плохо"]
 ], one_time_keyboard=False, resize_keyboard=True)
-
-DB_FILE = "/data/smdd_feedback.db"
-PASSWORD = open("db_password", "r").read().strip()
-
 
 Base = declarative_base()
 
 
 @contextmanager
 def db_session():
+    db_file = config["DEFAULT"]["DatabaseFile"]
     engine = create_engine(
-        f"sqlite:///{DB_FILE}",
+        f"sqlite:///{db_file}",
         convert_unicode=True
     )
     Base.metadata.create_all(engine)
@@ -85,16 +75,17 @@ class Response(Base):
 
     __tablename__ = "responses"
 
-    def __init__(self, question, user, answer, datetime):
+    def __init__(self, question, user, answer, current_datetime):
         self.question = question
         self.user = user
         self.answer = answer
-        self.datetime = datetime
+        self.datetime = current_datetime
 
     def __repr__(self):
         return f"Question: {self.id}\n" \
                f"User: {self.user}\n" \
-               f"Answer: {self.answer}"
+               f"Answer: {self.answer}\n" \
+               f"Datetime: {self.datetime}"
 
 
 def get_data(update, context) -> None:
@@ -155,7 +146,7 @@ def get_response(question: int) -> Callable:
                     question=question,
                     user=user.id,
                     answer=update.message.text,
-                    datetime=datetime.datetime.now()
+                    current_datetime=datetime.datetime.now()
                 )
                 db.add(current_response)
 
@@ -189,10 +180,6 @@ def start(update, context):
         update.message.chat.first_name,
         update.message.chat.last_name,
         update.message.chat_id
-    )
-    context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text=repr(user)
     )
 
     with db_session() as db:
@@ -233,7 +220,6 @@ def cancel(update, context):
 
 if __name__ == "__main__":
     token = open("token", "r").read().strip()
-    open("pid", "w").write(str(os.getpid()))
     updater = Updater(token=token, use_context=True)
     dispatcher = updater.dispatcher
 

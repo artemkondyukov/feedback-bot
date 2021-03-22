@@ -1,0 +1,3 @@
+[DEFAULT]
+DatabaseFile = data/smdd_feedback.db
+QuestionsFile = data/questions

@@ -31,11 +31,12 @@ jobs:
         env:
           TELEGRAM_TOKEN: ${{secrets.TELEGRAM_TOKEN}}
 
-      - name: Write DB password
-        run: 'echo "$DB_PASSWORD" > db_password'
-        env:
-          DB_PASSWORD: ${{secrets.DB_PASSWORD}}
-      
+      - name: Write config file
+        run: |
+          echo "[DEFAULT]" > data/config
+          echo "DatabaseFile = /data/smdd_feedback.db" >> data/config
+          echo "QuestionsFile = data/questions" >> data/config
+
       # Install AWS CLI 2
       - name: Install AWS CLI 2
         run: |
