@@ -36,6 +36,7 @@ jobs:
           echo "[DEFAULT]" > data/config
           echo "DatabaseFile = /data/smdd_feedback.db" >> data/config
           echo "QuestionsFile = data/questions" >> data/config
+          echo "AdminId = 115065663" >> data/config
 
       # Install AWS CLI 2
       - name: Install AWS CLI 2
